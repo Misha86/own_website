@@ -1,0 +1,9 @@
+{% if messages %}
+        {% for message in messages%}
+            <div class="messages form-group has-{{ message.extra_tags }}">
+                <label class="control-label">
+                    <p><em>{{ message }}</em></p>
+                </label>
+            </div>
+        {% endfor %}
+{% endif %}

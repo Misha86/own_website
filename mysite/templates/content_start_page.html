@@ -1,0 +1,71 @@
+{% extends "base.html" %}{% load staticfiles %} {% load i18n %}
+
+
+{% block title %}{% endblock %}
+
+
+{% block style %}
+
+
+{% endblock %}
+
+
+{% block content %}
+
+    <!-- Content -->
+    <div class="col-lg-12 jumbotron">
+        <h1>Сайт-представлення!</h1>
+        <p>Даний сайт розроблений для представлення моїх навиків в програмуванні
+            мовою Python та його фреймворком Django, а також показати, що я за особистість, чим цікавлюся і займаюся.
+            При розробці була використана бібліотека JQuery. В майбутньому даний сайт буде реалізований за допомогою Django Rest та AngularJS </p>
+    </div>
+    <div class="col-lg-4 col-md-5 col-sm-5 col-xs-6 jumbotron">
+        <form id="form-massage" action="{% url 'blog:start_page' %}" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                {{ field.errors }}
+                {{ field }}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">відправити повідомлення</button>
+        </form>
+    </div>
+    {% if users %}
+        <div class="col-lg-7 col-md-6 col-sm-6 col-xs-5 pull-right jumbotron">
+        <div>
+            <h1 id="list-users" class="text-center">Зареєстровані користувачі</h1>
+        </div>
+        <div class="row">
+            {% for user in users %}
+                <div id="people" class="col-lg-2 col-sm-4 col-xs-6 text-center">
+                    <img src="{{ user.avatar.url }}" class="img-circle" width="70px" height="70px">
+                    <h5>{{ user.user.username }}</h5>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% if users.has_other_pages %}
+    <div id="pagination" class="row pg-users">
+        <ul class="pagination pagination-sm">
+            {% if users.has_previous %}
+                <li><a href="?page={{ users.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="">&laquo;</a></li>
+            {% endif %}
+            {% for page in users.paginator.page_range %}
+                {% if page == users.number %}
+                    <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ page }}">{{ page }}</a></li>
+                {% endif%}
+            {% endfor %}
+            {% if users.has_next %}
+                <li><a href="?page={{ users.next_page_number }}">&raquo</a></li>
+            {% else %}
+                <li class="disabled"><a href="">&raquo</a></li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
+</div>
+
+{% endblock %}

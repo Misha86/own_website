@@ -1,0 +1,56 @@
+{% load staticfiles %} {% load i18n %}
+
+
+<div class="row">
+    {% if user.is_authenticated %}
+        <div class="col-lg-3 col-xs-6 pull-right">
+            <h4><a href="{% url 'loginsys:logout' %}">Вийти ({{ user.username }}) </a></h4>
+        </div>
+        <div class="col-lg-3 col-xs-6 pull-right">
+            <h4><a href="{% url 'loginsys:update' %}">Змінити профіль</a></h4>
+        </div>
+    {% else %}
+        <div class="col-lg-1 pull-right">
+            <h4><a href="{% url 'loginsys:login' %}">{% trans 'Увійти' %}</a></h4>
+        </div>
+        <div class="col-lg-2 pull-right">
+            <h4><a href="{% url 'loginsys:register' %}">{% trans 'Реєстрація' %}</a></h4>
+        </div>
+    {% endif %}
+</div>
+
+
+<div id="login" hidden="hidden" title="Вхід на сайт">
+    <div id="login-register">
+        <form action="" method="post">
+            {% csrf_token %}
+            <label for="username">І'мя користувача</label>
+            <input  value="{{username}}" type="text" class="form-control" name="username"
+                    id="username" placeholder="введіть ім'я користувача" >
+            <div class="form-group has-error">
+                {% if login_error_username %}
+                    <label class="control-label errorlist"><em>{{login_error_username}}</em></label>
+                {% endif %}
+            </div>
+            <label for="password">Пароль</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="пароль">
+            <div class="form-group has-error">
+                {% if login_error_password %}
+                    <label class="control-label"><em>{{login_error_password}}</em></label>
+                {% endif %}
+            </div>
+            <div class="form-group has-error">
+                {% if login_error_username_password %}
+                    <label class="control-label"><em>{{login_error_username_password}}</em></label>
+                {% elif login_error%}
+                    <label class="control-label"><em>{{login_error}}</em></label>
+                {% endif %}
+            </div>
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">{% trans 'Увійти' %}</button>
+                <button id="cancel" type="button" class="btn btn-default pull-right">Відміна</button>
+                <button type="button" class="btn btn-default"><a href="{% url 'loginsys:password_reset' %}">{% trans 'Забули пароль?' %}</a></button>
+            </div>
+        </form>
+    </div>
+</div>

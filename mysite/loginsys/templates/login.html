@@ -1,0 +1,40 @@
+{% extends 'base.html'%} {% load i18n %} {% load staticfiles %}
+
+
+{% block login %}
+
+            <div id="login-register" class="col-md-4 col-sm-6 col-xs-10 col-md-offset-4 col-sm-offset-3 col-xs-offset-1">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <label for="username">І'мя користувача</label>
+                    <input  value="{{username}}" type="text" class="form-control" name="username"
+                            id="username" placeholder="введіть ім'я користувача" >
+                    <div class="form-group has-error">
+                        {% if login_error_username %}
+                            <label class="control-label errorlist"><em>{{login_error_username}}</em></label>
+                        {% endif %}
+                    </div>
+                    <label for="password">Пароль</label>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="пароль">
+                    <div class="form-group has-error">
+                        {% if login_error_password %}
+                            <label class="control-label"><em>{{login_error_password}}</em></label>
+                        {% endif %}
+                    </div>
+                    <div class="form-group has-error">
+                        {% if login_error_username_password %}
+                            <label class="control-label"><em>{{login_error_username_password}}</em></label>
+                        {% elif login_error%}
+                            <label class="control-label"><em>{{login_error}}</em></label>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary">Увійти</button>
+                        <button type="button" class="btn btn-default pull-right"><a href="{{ return_path }}">Відміна</a></button>
+                        <button type="button" class="btn btn-default"><a href="{% url 'loginsys:password_reset' %}">{% trans 'Забули пароль?' %}</a></button>
+                    </div>
+                </form>
+            </div>
+
+{% endblock %}
+

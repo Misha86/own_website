@@ -1,0 +1,146 @@
+{% extends "base.html" %} {% load staticfiles %} {% load my_filters %} {% load i18n %} {% load humanize %}
+
+
+{% block title %}3D MAX | {{ category.category_title }} {% endblock %}
+
+
+{% block style %}
+
+    <style>
+        html, body {
+            background-image: url("/static/img/3.jpg");
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block content %}
+
+    {% if user.is_superuser %}
+        <div class="row">
+            <div class="col-md-4">
+                <a class="create_update" href="{% url 'blog:articles_list_update' item_slug=category.menu_category.menu_name category_slug=category.category_name %}"><h3>{% trans 'Змінити список статей?' %}</h3></a>
+            </div>
+            <div class="col-md-4 pull-right">
+                <a class="create_update" href="{% url 'blog:article_create' item_slug=category.menu_category.menu_name category_slug=category.category_name %}"><h3>{% trans 'Створити нову статтю?' %}</h3></a>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Carousel -->
+        {% if articles_carousel %}
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+
+            <!-- Indicators -->
+            {% if articles_carousel.count > 1 %}
+                <ol class="carousel-indicators">
+                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                    {% if articles_carousel.count == 2 %}
+                        <li data-target="#myCarousel" data-slide-to="1"></li>
+                    {% else %}
+                        <li data-target="#myCarousel" data-slide-to="1"></li>
+                        <li data-target="#myCarousel" data-slide-to="2"></li>
+                    {% endif %}
+                </ol>
+            {% endif %}
+            <div class="carousel-inner" role="listbox">
+                {% for article_carousel in articles_carousel %}
+                    <div class="{% if article_carousel != articles_carousel.0 %} item {% else %} item active {% endif %}">
+                        <img class="first-slide" src="{{ article_carousel.article_image.url }}" alt="{{ article_carousel.article_title }}">
+                        <div class="container">
+                            <div class="carousel-caption">
+                                <h1>{{ article_carousel.article_title }}</h1>
+                                <p>{{ article_carousel.article_text|shot_text:200|capfirst }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if articles_carousel.count > 1 %}
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- search_works -->
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <form class="form-group input-group" method="get" action="">
+                    <input class="form-control" type="text" name="q" placeholder="пошук статті" value="{{ request.GET.q }}"/>
+                    <span class="input-group-btn">
+                        <input class="btn btn-primary" type="submit" value="Пошук"/>
+                    </span>
+                </form>
+            </div>
+        </div>
+
+    {% else %}
+
+        <div class="col-md-10 col-md-offset-2">
+            <h2>Даний список покищо пустий!</h2>
+        </div>
+
+    {% endif %}
+
+    <!-- gallery_works -->
+    <div id="works_3d_max">
+        {% for article in articles %}
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+
+                {% if article.article_image %}
+                    <div class="d3_image">
+                        <a href="{{ article.get_absolute_url }}" title="{{ article.article_title }}"><img class="img-responsive img-rounded" src="{{article.article_image.url}}" alt="{{ article.article_title }}"/></a>
+                    </div>
+                {% endif %}
+                <div class="image_title">
+                    <ul>
+                        <li>
+                            <ul class="likes">
+                                <li><a href="{% url 'blog:add_like' article.id %}"><img src="{% static 'blog/img/like.png' %}"></a></li>
+                                <li> <h5>{{ article.article_likes }}</h5></li>
+                                <li style="float: right"><h5>Створена: {{ article.article_date|naturaltime }}</h5></li>
+                            </ul>
+                        </li>
+                        <li><a href="{{ article.get_absolute_url }}"><h4>{{ article.article_title }}</h4></a></li>
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if articles.has_other_pages %}
+
+        <div id="pagination" class="row">
+            <ul class="pagination">
+                {% if articles.has_previous %}
+                    <li><a href="?page={{ articles.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><a href="">&laquo;</a></li>
+                {% endif %}
+                {% for page in list_pagination %}
+                    {% if page == articles.number %}
+                        <li class="active"><a href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a></li>
+                    {% elif page == page_before or page == page_after %}
+                        <li><a href="">...</a></li>
+                    {% else %}
+                        <li><a href="?page={{ page }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page }}</a></li>
+                    {% endif%}
+                {% endfor %}
+                {% if articles.has_next %}
+                    <li><a href="?page={{ articles.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&raquo</a></li>
+                {% else %}
+                    <li class="disabled"><a href="">&raquo</a></li>
+                {% endif %}
+            </ul>
+        </div>
+
+    {% endif %}
+
+{% endblock %}

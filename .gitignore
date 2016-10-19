@@ -1,0 +1,6 @@
+/mysite/mysite/settings/db_password.py
+/mysite/mysite/settings/base.py
+/mysite/mysite/settings_old.py
+env/
+.idea/
+dumpdata.txt

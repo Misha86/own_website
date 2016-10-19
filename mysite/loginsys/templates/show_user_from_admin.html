@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% load staticfiles %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="container">
+            {% if users|length > 1 %}
+                {% for user in users %}
+                    <div class="col-md-4">
+                    <div class="well">
+                        <h3>{{ user }}</h3>
+                        <p><strong>Стать:</strong> {{ user.get_sex_display }};</p>
+                        <p><strong>Дата реєстрації:</strong> {{ user.user.date_joined }};</p>
+                        <p><strong>Email:</strong> {{ user.user.email }}</p>
+                        <p><strong>Адміністратор:</strong> {{ user.user.is_superuser }};</p>
+                        <p><strong>Дата останього входу:</strong> {{ user.user.last_login }};</p>
+                        <p><strong>Аватар:</strong> {{ user.avatar.url}}.</p>
+                    </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-md-4 well">
+                    <h3>{{ users }}</h3>
+                    <p><strong>Стать:</strong> {{ users.get_sex_display }};</p>
+                    <p><strong>Дата реєстрації:</strong> {{ users.user.date_joined }};</p>
+                    <p><strong>Email:</strong> {{ users.user.email }}</p>
+                    <p><strong>Адміністратор:</strong> {{ users.user.is_superuser }};</p>
+                    <p><strong>Дата останього входу:</strong> {{ users.user.last_login }};</p>
+                    <p><strong>Аватар:</strong> {{ users.avatar.url }}.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

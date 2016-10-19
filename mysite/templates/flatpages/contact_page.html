@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block title %}{{ flatpage.title }}{% endblock %}
+
+{% block style %}
+
+    <style>
+        html, body {
+            background-image: url("/static/img/1.jpg");
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="col-md-12 col-sm-12 flatpage well">
+        <h1>{{ flatpage.title }}</h1>
+        {{ flatpage.content }}
+    </div>
+
+{% endblock %}
+
+
+
+

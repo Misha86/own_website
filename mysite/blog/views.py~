@@ -1,0 +1,141 @@
+from django.shortcuts import render, render_to_response, redirect
+from django.core.context_processors import csrf
+from blog.models import Article, Comments, Category
+from blog.form import CommentForm, SendMassageForm
+from django.core.exceptions import ObjectDoesNotExist
+from django.http.response import HttpResponse, Http404
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.conf import settings
+from django.utils.translation import gettext as _
+from django.utils.translation import (
+    LANGUAGE_SESSION_KEY, check_for_language, get_language, to_locale,
+)
+from django.utils import translation
+from loginsys.models import Profile
+
+def start_page(request):
+    start_page = {}
+    form = SendMassageForm()
+    start_page['form'] = form
+    users = Profile.objects.exclude(pk=request.user.pk).order_by('-user__date_joined')
+    current_page = Paginator(users, 6)
+    page_number = request.GET.get('page', 1)
+    start_page['users'] = current_page.page(page_number)
+    if request.POST and 'pause' not in request.session:
+        form = SendMassageForm(request.POST)
+        start_page['form'] = form
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            massage = form.cleaned_data['massage']
+            send_mail(email, massage, email, [settings.EMAIL_HOST_USER],)
+            request.session.set_expiry(60)
+            request.session['pause'] = True
+            return redirect('/')
+    return render(request, 'base.html', start_page)
+
+
+def set_language(request, lang_code):
+
+        path = request.META.get('HTTP_REFERER', '/')
+        if lang_code and check_for_language(lang_code):
+            if hasattr(request, 'session'):
+                request.session[LANGUAGE_SESSION_KEY] = lang_code
+                return redirect(path)
+        # user_language = lang_code
+        # translation.activate(user_language)
+        # request.session[translation.LANGUAGE_SESSION_KEY] = user_language
+        # return redirect(path)
+
+
+def photo(request):
+    pass
+
+
+def gallery_work_create(request):
+    pass
+
+
+def gallery_work(request, article_slug):
+    gallery = {}
+    category_3d_max = Category.objects.get(category_title='Галерея робіт')
+    article = category_3d_max.articles.get(article_slug=article_slug)
+    gallery['article'] = article
+    comments = article.comments.all().order_by('-comments_create')
+    current_page = Paginator(comments, 4)
+    page_number = request.GET.get('page', 1)
+    gallery['comments'] = current_page.page(page_number)
+    form = CommentForm(auto_id='id_for_%s', label_suffix=' -> -> -> ->')
+    # label_tag = form['comments_text'].label_tag(label_suffix='++++')       # зміна label в формі
+    # gallery['label_tag'] = label_tag
+    gallery['form'] = form
+    if request.POST and 'pause' not in request.session:
+        form = CommentForm(request.POST)
+        gallery['form'] = form
+        if form.is_valid() and request.user.is_authenticated():
+            comment = form.save(commit=False)
+            comment.comments_article = Article.objects.get(article_slug=article_slug)
+            comment.comments_user = Profile.objects.get(pk=request.user.pk)                            # АБО comment.comments_from = auth.get_user(request)  АБО comment.comments_from_id = auth.get_user(request).id
+            form.save()
+            request.session.set_expiry(60)
+            request.session['pause'] = True
+            gallery['form'] = CommentForm(auto_id='id_for_%s', label_suffix=' -> -> -> ->')
+    elif 'pause' in request.session:
+        error = _('Ви вже залишили коментар, зачекайте хвилину.')
+        gallery['error'] = error
+    return render(request, 'gallery_work.html', gallery)
+
+
+def gallery_works(request):
+    gallery = {}
+    category_3d_max = Category.objects.get(category_title='Галерея робіт')
+    articles = category_3d_max.articles.all().order_by('-article_date')
+    articles_carousel = category_3d_max.articles.all().order_by('-article_likes')[0:3]
+    current_page = Paginator(articles, 6)
+    page_number = request.GET.get('page', 1)
+    gallery['articles'] = current_page.page(page_number)
+    gallery['articles_carousel'] = articles_carousel
+    return render(request, 'gallery_works.html', gallery)
+
+
+def add_like(request, article_slug):
+    try:
+        if article_slug and request.user in request.COOKIES:
+            return_path = request.META.get('HTTP_REFERER', '/')
+            return redirect(return_path)
+        else:
+            article = Article.objects.get(article_slug=article_slug)
+            article.article_likes += 1
+            article.save()
+            redirect_path = request.META.get('HTTP_REFERER', '/')
+            response = redirect(redirect_path)
+            response.set_cookie(article_slug, 'test')
+            return response
+    except ObjectDoesNotExist:
+        raise Http404
+    return redirect('/')
+
+
+def blog_3d_max(request):
+    blog_3d_max = {}
+    return render(request, 'blog_3d_max.html', blog_3d_max)
+
+
+def proposals(request):
+    pass
+
+
+def django_python(request):
+    pass
+
+
+def html_5(request):
+    pass
+
+
+def css_3(request):
+    pass
+
+
+def bootstrap(request):
+    pass

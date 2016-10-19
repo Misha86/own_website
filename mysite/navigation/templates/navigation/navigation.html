@@ -1,0 +1,40 @@
+<!-- Navigation -->
+<nav class="container" role="navigation">
+    <div class="navbar navbar-inverse navbar-static-top pull-right">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            {#            <a class="navbar-brand" href="/about/">Про себе</a>#}
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                {% for item in menu %}
+                    {% if item.menu_type == 'single' and item.menu_url != path %}
+                        <li><a {% if '/' in  item.menu_url %}href={{ item.menu_url }}
+                                   {% else %}href={% url item.menu_url item.menu_name %}{% endif %}>{{ item.menu_title }}</a></li>
+                    {% elif item.menu_type == 'single' and item.menu_url == path %}
+                        <li class="active"><a {% if '/' in  item.menu_url %}href={{ item.menu_url }}
+                                                  {% else %}href={% url item.menu_url item.menu_name %}{% endif %}>{{ item.menu_title }}</a></li>
+                    {% elif item.menu_type == 'dropdown' %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ item.menu_title }}<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                {% for category in item.categories.all  %}
+                                        <li><a {% if '/' in  category.category_url %} href={{ category.category_url }}
+                                                {% else %} href={% url category.category_url item_slug=category.menu_category.menu_name category_slug=category.category_name %}{% endif %}>
+                                            {{ category.category_title }} </a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+

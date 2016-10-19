@@ -1,0 +1,203 @@
+{% load staticfiles %} {% load i18n %}
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>{% block title %}{% trans 'Поліщук Михайло' %}{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href={% static 'css/style.css' %} rel="stylesheet">
+    {% block style %}{% endblock %}
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'js/html5shiv.min.js' %}"></script>
+      <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+  {% block error %}
+  {% block login %}
+
+    <!-- Header -->
+  <header class="container" role="banner">
+      <div class="row">
+          <div class="col-lg-8 col-xs-12 col-lg-offset-1">
+              <h2><a href="/">{% trans 'Поліщук Михайло Віталійович' %}</a></h2>
+          </div>
+
+       <!-- Languages -->
+          <div class="col-lg-3 pull-right">
+              <ul>
+                  {% get_current_language as LANGUAGE_CODE %}
+                  {% get_available_languages as LANGUAGES %}
+                  {% get_language_info_list for LANGUAGES as languages %}
+                  {% for language in languages %}
+                      <li class="flag"><a href="{% url 'blog:set_language' lang_code=language.code %}" title="{{ language.name_local }}">
+                          <img class="{% if LANGUAGE_CODE == language.code %} active-language {% else %} img-responsive{% endif %}"
+                                  {% if language.code == 'uk' %} src="{% static 'img/ukraine.jpg' %}" alt="Ukraine"
+                                  {% elif language.code == 'ru' %} src="{% static 'img/russia.jpeg' %}" alt="Russia"
+                                  {% elif language.code == 'en' %} src="{% static 'img/england.jpg' %}" alt="England"
+                                  {% endif %}/></a></li>
+                  {% endfor %}
+              </ul>
+          </div>
+      </div>
+
+      <div class="row">
+          {% if user.is_authenticated %}
+              <div class="col-lg-3 col-xs-6 pull-right">
+                  <h4><a href="{% url 'logout' %}">Вийти ({{ user.username }}) </a></h4>
+              </div>
+          {% else %}
+              <div class="col-lg-1 pull-right">
+                  <h4><a href="{% url 'login' %}">{% trans 'Увійти' %}</a></h4>
+              </div>
+              <div class="col-lg-2 pull-right">
+                  <h4><a href="{% url 'register' %}">{% trans 'Реєстрація' %}</a></h4>
+              </div>
+
+          {% endif %}
+      </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="container" role="navigation">
+      <div class="navbar navbar-inverse navbar-static-top pull-right">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="/about/">Про себе</a>
+          </div>
+          <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                  <li class="active"><a href="/">Головна</a></li>
+                  <li><a href="{% url 'blog:photo' %}">Фото</a></li>
+                  <li><a href="/contact/">Контакти</a></li>
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">3D Max<b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          <li><a href="{% url 'blog:gallery_works' %}">Галерея робіт</a></li>
+                          <li><a href="{% url 'blog:blog_3d_max' %}">блог 3D max</a></li>
+                          <li class="divider"></li>
+                          <li><a href="#">Пропозиції</a></li>
+                      </ul>
+                  </li>
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Інтереси<b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          <li><a href="{% url 'blog:django_python' %}">django-python</a></li>
+                          <li><a href="{% url 'blog:html_5' %}">Html 5</a></li>
+                          <li><a href="{% url 'blog:css_3' %}">css 3</a></li>
+                          <li><a href="{% url 'blog:bootstrap' %}">Bootstrap</a></li>
+                      </ul>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </nav>
+
+  <!-- Wrapper -->
+  <main class="wrapper" role="main">
+      <div class="container">
+          {% block content %}
+
+               <!-- Content -->
+              <div class="col-lg-12 jumbotron">
+                  <h1>Hello, world!</h1>
+                  <p>Кілька місяців тому я проводив вебінар для початківців, де розказував про 5 перешкод на дорозі
+                      людини, що починає шлях до своєї першої роботи програміста. В даному вебінару ми пройшлись по
+                      найпроблемніших місцях і я спробував дати подальші інструкції щодо розгрібання даних каменів
+                      спотикання.</p>
+              </div>
+              <div class="col-lg-4 col-md-5 col-sm-5 col-xs-6 jumbotron">
+                  <form id="form-massage" action="{% url 'blog:start_page' %}" method="post">
+                      {% csrf_token %}
+                      {% for field in form %}
+                      {{ field.errors }}
+                      {{ field }}
+                      {% endfor %}
+{#                      <input  value="{{email}}" type="text" class="form-control" name="email" id="email" placeholder="введіть Ваш e-mail">#}
+{#                      <textarea rows="7" value="{{massage}}" class="form-control"  name="massage" id="massage" placeholder="введіть текст повідомлення для відправлення"></textarea>#}
+                      <button type="submit" class="btn btn-primary">відправити повідомлення</button>
+                  </form>
+              </div>
+              <div class="col-lg-7 col-md-6 col-sm-6 col-xs-5 pull-right jumbotron">
+                  <div>
+                      <h1 id="list-users" class="text-center">Зареєстровані користувачі</h1>
+                  </div>
+                  <div class="row">
+                      {% for user in users %}
+                      <div id="people" class="col-lg-2 col-sm-4 col-xs-6 text-center">
+                          <img src="{{ user.avatar.url }}" class="img-circle" width="70px" height="70px" hover="assaas">
+                          <h5>{{ user.user.username }}</h5>
+                      </div>
+                      {% endfor %}
+                  </div>
+                  {% if users.has_other_pages %}
+                      <div id="pagination" class="row pg-users">
+                          <ul class="pagination pagination-sm">
+                              {% if users.has_previous %}
+                                  <li><a href="?page={{ users.previous_page_number }}">&laquo;</a></li>
+                              {% else %}
+                                  <li class="disabled"><a href="">&laquo;</a></li>
+                              {% endif %}
+                              {% for page in users.paginator.page_range %}
+                                  {% if page == users.number %}
+                                      <li class="active"><a href="?page={{ page }}">{{ page }}</a></li>
+                                  {% else %}
+                                      <li><a href="?page={{ page }}">{{ page }}</a></li>
+                                  {% endif%}
+                              {% endfor %}
+                              {% if users.has_next %}
+                                  <li><a href="?page={{ users.next_page_number }}">&raquo</a></li>
+                              {% else %}
+                                  <li class="disabled"><a href="">&raquo</a></li>
+                              {% endif %}
+                          </ul>
+                      </div>
+                  {% endif %}
+
+              {% endblock %}
+
+              </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+          <div class="container">
+              <div  class="row">
+                  <div class="col-lg-4 col-md-5 col-sm-5 text-center">
+                      <h4>Особистий сайт Поліщука Михайла</h4>
+                  </div>
+                  <div class="col-lg-5 col-md-5 col-sm-4 text-center">
+                      <h4>Я в соцмережах:</h4>
+                  </div>
+                  <div class="col-lg-3 col-md-2 col-sm-3 text-center">
+                      <h4>2015 MySite</h4>
+                  </div>
+              </div>
+          </div>
+      </footer>
+
+  </main>
+
+  {% endblock login %}
+  {% endblock error %}
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="{% static 'js/bootstrap.js' %}"></script>
+  </body>
+</html>
+
+

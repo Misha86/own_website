@@ -1,0 +1,71 @@
+from django.shortcuts import render_to_response, redirect
+from django.contrib import auth
+from django.contrib.auth.forms import UserCreationForm
+from django.core.context_processors import csrf
+from loginsys.models import Profile
+from loginsys.form import ProfileCreationForm
+
+
+def login(request):
+    args = {}
+    args.update(csrf(request))
+    return_path = request.META.get('HTTP_REFERER', '/')
+    args['return_path'] = return_path
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+                auth.login(request, user)
+                return redirect('/')
+        elif not username and password:
+            args['login_error_username'] = "Обов'язково введіть ім'я!"
+            return render_to_response('login.html', args)
+        elif username and not password:
+            args['username'] = username
+            args['login_error_password'] = "Обов'язково введіть пароль!"
+            return render_to_response('login.html', args)
+        elif not username and not password:
+            args['login_error_username_password'] = "Ви не ввели жодних даних!"
+            return render_to_response('login.html', args)
+        else:
+            args['login_error'] = 'Користувач не знайдений!'
+            return render_to_response('login.html', args)
+    else:
+        return render_to_response('login.html', args)
+
+
+def logout(request):
+    auth.logout(request)
+    return_path = request.META.get('HTTP_REFERER', '/')  # HTTP_REFERER — ссылка на страницу с которой пришли на текущую, если такая существует
+    return redirect(return_path)
+
+
+def register(request):
+    args = {}
+    args.update(csrf(request))
+    return_path = request.META.get('HTTP_REFERER', '/')
+    if return_path == 'http://127.0.0.1:8000/auth/register/':
+        args['return_path'] = '/'
+    else:
+        args['return_path'] = return_path
+    args['form'] = ProfileCreationForm()
+    if request.POST:
+        form = ProfileCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            new_user = auth.authenticate(username=newuser_form.cleaned_data['username'],
+                                         password=newuser_form.cleaned_data['password2'])
+            new_profile = Profile(user=new_user, avatar=newuser_form.cleaned_data['avatar'],
+                                  sex=newuser_form.cleaned_data['sex'])
+            new_profile.save()
+            auth.login(request, new_user)
+            return redirect('/')
+        else:
+            args['form'] = form
+    return render_to_response('register.html', args)
+
+
+
+
+

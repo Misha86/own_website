@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title%}{{title}}{% endblock title%}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block create_article_form %}
+
+    <div class="col-sm-4 col-sm-offset-4">
+        <h2>{{title}}</h2>
+        <form  method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{form.as_p}}
+            <input class="btn btn-primary" type="submit" value="{{button_create}}"/>
+            <button type="button" class="btn btn-default pull-right"><a href="{{ return_path }}">{{ button_cancel }}</a></button>
+        </form>
+    </div>
+
+{% endblock create_article_form %}

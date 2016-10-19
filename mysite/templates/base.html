@@ -1,0 +1,95 @@
+{% load staticfiles %} {% load i18n %}{% load my_filters %}{% load navigation_tags %}{% load humanize %}
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" name="keywords" content="3d Max,django,python,Поліщук Михайло">
+
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>{% block title %} {% trans 'Поліщук Михайло' %}{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <script type="text/javascript" src="{% static 'js/jquery-2.1.4.js' %}"></script>
+
+    {% block style %}{% endblock %}
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'js/html5shiv.min.js' %}"></script>
+      <script src="{% static 'js/respond.min.js' %}"></script>
+      <script src="{% static 'js/angular.js' %}"></script>
+    <![endif]-->
+
+    {% block scripts %}{% endblock scripts %}
+
+</head>
+
+<body>
+{% block error %}
+
+    {% block create_article_form %}
+
+        {% block login %}
+
+            <!-- Header -->
+            <header class="container" role="banner">
+
+                {% include 'messages.html' %}
+
+                <div class="row">
+                    <div class="col-lg-8 col-xs-12 col-lg-offset-1">
+                        <h2><a href="/">{% trans 'Поліщук Михайло Віталійович' %}</a></h2>
+                    </div>
+
+                    {% include 'languages.html' %}
+
+                </div>
+
+                {% include 'user_login.html' %}
+
+            </header>
+
+            {% block breadcrumbs %}
+
+                {% navigation_menu path=request.path %}
+
+            {% endblock %}
+
+            <!-- Wrapper -->
+            <main class="wrapper" role="main">
+                <div class="container">
+
+                    {% block content_title %}
+
+                    {% endblock %}
+
+                    {% block content %}
+
+                    {% endblock %}
+
+                </div>
+
+                {% include 'footer.html' %}
+
+            </main>
+
+        {% endblock login %}
+
+    {% endblock create_article_form %}
+
+{% endblock error %}
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+{#<script src="{% static 'js/jquery.min.js' %}"></script>#}
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+</html>
+
+

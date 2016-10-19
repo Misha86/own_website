@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% load staticfiles %} {% load my_filters %} {% load i18n %}
+
+
+{% block title %}{{ menu_item.menu_title }} {% endblock %}
+
+
+{% block style %}
+
+    <style>
+        html, body {
+            background-image: url("/static/img/2.jpg");
+        }
+    </style>
+
+{% endblock %}
+
+
+{% block content %}
+
+    {% if user.is_superuser %}
+        <div class="row">
+            <div class="col-md-4">
+                <a class="create_update" href="{% url 'blog:article_create' item_slug=category.menu_category.menu_name category_slug=category.category_name %}"><h3>{% trans 'Створити нову статтю?' %}</h3></a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

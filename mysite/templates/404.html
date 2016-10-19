@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% load i18n %}
+
+
+{% block title %}{% trans '404 Сторінка не знайдена' %}{% endblock %}
+
+
+{% block error %}
+    <div class="row">
+        <div class="container">
+
+            <h1>{% trans '404 Сторінка не знайдена' %}</h1>
+            <h3><em>{% trans 'Вибачте, запрошена Вами сторінка не знадена!' %}</em></h3>
+
+        </div>
+    </div>
+{% endblock %}

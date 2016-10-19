@@ -1,0 +1,21 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
+
+
+class Profile(models.Model):
+    class Meta:
+        db_table = "profile"
+        verbose_name = _("Профіль користувача")
+        verbose_name_plural = _("Профілі користувачів")
+
+    user = models.OneToOneField(User, primary_key=True, related_name="profiles", verbose_name=_("Користувач"))
+    avatar = models.ImageField(verbose_name=_("Аватарка"), upload_to='upload/profile_images/', blank=True,
+                               help_text=_("Фото користувача"))
+
+    def __str__(self):
+        return self.user.get_full_name()
+
+
+
+
